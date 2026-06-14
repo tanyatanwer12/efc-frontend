@@ -16,7 +16,7 @@ export const CaseProvider = ({
     useState([]);
 
   const API_URL =
-    "http://localhost:5000/api/cases";
+    "https://efc-backend.onrender.com/api/cases";
 
   // GET ALL CASES
 

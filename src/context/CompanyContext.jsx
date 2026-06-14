@@ -18,7 +18,7 @@ export const CompanyProvider = ({ children }) => {
       try {
         const res =
           await axios.get(
-            "http://localhost:5000/api/companies"
+            "https://efc-backend.onrender.com/api/companies"
           );
 
         setCompanies(res.data);
@@ -38,7 +38,7 @@ export const CompanyProvider = ({ children }) => {
       try {
         const res =
           await axios.post(
-            "http://localhost:5000/api/companies",
+            "https://efc-backend.onrender.com/api/companies",
             company
           );
 
@@ -57,7 +57,7 @@ export const CompanyProvider = ({ children }) => {
     async (id) => {
       try {
         await axios.delete(
-          `http://localhost:5000/api/companies/${id}`
+          `https://efc-backend.onrender.com/api/companies/${id}`
         );
 
         setCompanies((prev) =>
