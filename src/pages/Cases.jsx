@@ -16,6 +16,9 @@ export default function Cases() {
     updateCase,
   } = useContext(CaseContext);
 
+const [statusFilter, setStatusFilter] =
+  useState("");
+
   const { companies } =
     useContext(CompanyContext);
 
@@ -33,17 +36,25 @@ export default function Cases() {
   const [selectedCase, setSelectedCase] =
     useState(null);
 
-  const filteredCases = cases.filter(
-    (item) =>
-      item.applicantName
-        ?.toLowerCase()
-        .includes(
-          search.toLowerCase()
-        ) ||
-      item.contactNo
-        ?.toString()
-        .includes(search)
-  );
+  let filteredCases = cases.filter(
+  (item) =>
+    item.applicantName
+      ?.toLowerCase()
+      .includes(
+        search.toLowerCase()
+      ) ||
+    item.contactNo
+      ?.toString()
+      .includes(search)
+);
+
+if (statusFilter) {
+  filteredCases =
+    filteredCases.filter(
+      (item) =>
+        item.status === statusFilter
+    );
+}
 
   const handleExcelUpload = (
     event
@@ -132,19 +143,36 @@ let duplicateCount = 0;
             row["CONTACT NO."]?.toString() || "",
 
           status:
-            row.STATUS === "COMPLETE"
-              ? "Completed"
-              : "Pending",
+  row.STATUS
+    ?.toString()
+    .trim()
+    .toUpperCase() ===
+  "COMPLETED"
+    ? "Completed"
+    : "Pending",
 
           verifierName:
             row["FE NAME"] || "",
 
-          verifierRate:
-            Number(row.RATE) || 0,
+          companyRate:
+  Number(
+    row["COMPANY_RATE"]
+  ) || 0,
 
-          companyRate: 0,
+verifierRate:
+  Number(
+    row["VERIFIER_RATE"] ||
+    row["VERIFIER RATE"] ||
+    row["Verifier Rate"]
+  ) || 0,
 
-          profit: 0,
+profit:
+  (Number(
+    row["COMPANY_RATE"]
+  ) || 0) -
+  (Number(
+    row["VERIFIER_RATE"]
+  ) || 0),
 
           state:
             row.STATE || "",
@@ -152,7 +180,10 @@ let duplicateCount = 0;
           createdAt:
             new Date(),
         };
-
+console.log(
+  "NEW CASE",
+  newCase
+);
         addCase(newCase);
 importedCount++;
       });
@@ -261,6 +292,33 @@ importedCount++;
                 </option>
               ))}
             </select>
+            <select
+  value={statusFilter}
+  onChange={(e) =>
+    setStatusFilter(e.target.value)
+  }
+  className="border p-3 rounded-lg"
+>
+  <option value="">
+    All Status
+  </option>
+
+  <option value="Pending">
+    Pending
+  </option>
+
+  <option value="Completed">
+    Completed
+  </option>
+
+  <option value="Hold">
+    Hold
+  </option>
+
+  <option value="Rejected">
+    Rejected
+  </option>
+</select>
 
             <label className="bg-green-600 text-white px-5 py-3 rounded-lg cursor-pointer hover:bg-green-700">
 
