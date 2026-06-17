@@ -16,7 +16,7 @@ export const CaseProvider = ({
     useState([]);
 
   const API_URL =
-    "https://efc-backend.onrender.com/api/cases";
+  "https://efc-backend.onrender.com/api/cases";
 
   // GET ALL CASES
 
@@ -95,6 +95,34 @@ export const CaseProvider = ({
     }
   };
 
+// BULK DELETE CASES
+
+const bulkDeleteCases =
+  async (ids) => {
+    try {
+      await axios.delete(
+        `${API_URL}/bulk-delete`,
+        {
+          data: { ids },
+        }
+      );
+
+      setCases((prev) =>
+        prev.filter(
+          (item) =>
+            !ids.includes(
+              item._id
+            )
+        )
+      );
+    } catch (error) {
+      console.error(
+        "Bulk delete failed",
+        error
+      );
+    }
+  };
+
   // UPDATE CASE
 
   const updateCase = async (
@@ -126,12 +154,13 @@ export const CaseProvider = ({
   return (
     <CaseContext.Provider
       value={{
-        cases,
-        fetchCases,
-        addCase,
-        deleteCase,
-        updateCase,
-      }}
+  cases,
+  fetchCases,
+  addCase,
+  deleteCase,
+  bulkDeleteCases,
+  updateCase,
+}}
     >
       {children}
     </CaseContext.Provider>

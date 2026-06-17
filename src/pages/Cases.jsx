@@ -10,11 +10,13 @@ import {
 
 export default function Cases() {
   const {
-    cases,
-    addCase,
-    deleteCase,
-    updateCase,
-  } = useContext(CaseContext);
+  cases,
+  addCase,
+  deleteCase,
+  bulkDeleteCases,
+} = useContext(
+  CaseContext
+);
 
 const [statusFilter, setStatusFilter] =
   useState("");
@@ -254,9 +256,11 @@ importedCount++;
 
     if (!confirmDelete) return;
 
-    for (const id of selectedCases) {
-      await deleteCase(id);
-    }
+    await bulkDeleteCases(
+  selectedCases
+);
+
+setSelectedCases([]);
 
     setSelectedCases([]);
   };
