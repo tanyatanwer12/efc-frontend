@@ -17,8 +17,11 @@ export default function AddCase() {
   
   const [formData, setFormData] = useState({
     caseId: "",
+    visitType: "Fresh",
     applicantName: "",
-    date: "",
+    date: new Date()
+    .toISOString()
+    .split("T")[0],
     bank: "",
     productType: "",
     resiOffice: "",
@@ -110,6 +113,9 @@ profit:
   Number(formData.verifierRate),
   };
 
+  
+console.log("NEW CASE =", newCase);
+
   addCase(newCase);
 
   navigate(`/company/${id}`);
@@ -197,28 +203,34 @@ profit:
 
             {/* Bank */}
             <div>
-              <label className="block mb-2 font-medium">
-                Bank
-              </label>
+  <label className="block mb-2 font-medium">
+    Bank
+  </label>
 
-              <select
-                value={formData.bank}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    bank: e.target.value,
-                  })
-                }
-                className="w-full border p-3 rounded-lg"
-              >
-                <option value="">Select Bank</option>
-                <option>HDFC</option>
-                <option>ICICI</option>
-                <option>SBI</option>
-                <option>Axis Bank</option>
-                <option>Kotak</option>
-              </select>
-            </div>
+  <input
+    list="banks"
+    value={formData.bank}
+    onChange={(e) =>
+      setFormData({
+        ...formData,
+        bank: e.target.value,
+      })
+    }
+    placeholder="Select or Type Bank"
+    className="w-full border p-3 rounded-lg"
+  />
+
+  <datalist id="banks">
+    <option value="HDFC" />
+    <option value="ICICI" />
+    <option value="SBI" />
+    <option value="Axis Bank" />
+    <option value="Kotak" />
+    <option value="Yes Bank" />
+    <option value="IndusInd" />
+    <option value="AU Small Finance" />
+  </datalist>
+</div>
 
             {/* Product Type */}
             <div>
@@ -267,23 +279,36 @@ profit:
             </div>
 
             {/* Zone */}
-            <div>
-              <label className="block mb-2 font-medium">
-                Zone
-              </label>
+           <div>
+  <label className="block mb-2 font-medium">
+    Zone / City
+  </label>
 
-              <input
-                type="text"
-                value={formData.zone}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    zone: e.target.value,
-                  })
-                }
-                className="w-full border p-3 rounded-lg"
-              />
-            </div>
+  <input
+    list="zones"
+    value={formData.zone}
+    onChange={(e) =>
+      setFormData({
+        ...formData,
+        zone: e.target.value,
+      })
+    }
+    placeholder="Select or Type Zone"
+    className="w-full border p-3 rounded-lg"
+  />
+
+  <datalist id="zones">
+    <option value="Delhi" />
+    <option value="Gurgaon" />
+    <option value="Faridabad" />
+    <option value="Noida" />
+    <option value="Ghaziabad" />
+    <option value="Greater Noida" />
+    <option value="Sonipat" />
+    <option value="Panipat" />
+    <option value="Rohtak" />
+  </datalist>
+</div>
 
             {/* Pincode */}
 <div>
@@ -325,37 +350,35 @@ profit:
 
             {/* Verifier */}
             <div>
-              <label className="block mb-2 font-medium">
-                Verifier Name
-              </label>
+  <label className="block mb-2 font-medium">
+    Verifier Name
+  </label>
 
-              <select
-  value={formData.verifierName}
-  onChange={(e) =>
-    setFormData({
-      ...formData,
-      verifierName:
-        e.target.value,
-    })
-  }
-  className="w-full border p-3 rounded-lg"
->
-  <option value="">
-    Select Verifier
-  </option>
+  <input
+    list="verifiers"
+    value={formData.verifierName}
+    onChange={(e) =>
+      setFormData({
+        ...formData,
+        verifierName:
+          e.target.value,
+      })
+    }
+    placeholder="Select or Type Verifier"
+    className="w-full border p-3 rounded-lg"
+  />
 
-  {verifiers.map(
-    (verifier) => (
-      <option
-        key={verifier.id}
-        value={verifier.name}
-      >
-        {verifier.name}
-      </option>
-    )
-  )}
-</select>
-            </div>
+  <datalist id="verifiers">
+    {verifiers.map(
+      (verifier) => (
+        <option
+          key={verifier.id}
+          value={verifier.name}
+        />
+      )
+    )}
+  </datalist>
+</div>
 
             <div>
   <label className="block mb-2 font-medium">
@@ -386,6 +409,31 @@ profit:
 
     <option value="Cancelled">
       Cancelled
+    </option>
+  </select>
+</div>
+
+<div>
+  <label className="block text-sm font-medium mb-2">
+    Visit Type
+  </label>
+
+  <select
+    value={formData.visitType}
+    onChange={(e) =>
+      setFormData({
+        ...formData,
+        visitType: e.target.value,
+      })
+    }
+className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+  >
+    <option value="Fresh">
+      Fresh
+    </option>
+
+    <option value="Revisit">
+      Revisit
     </option>
   </select>
 </div>
@@ -425,6 +473,7 @@ profit:
     className="w-full border p-3 rounded-lg"
   />
 </div>
+
 
             {/* Address */}
             <div className="md:col-span-2">

@@ -14,6 +14,7 @@ export default function Cases() {
   addCase,
   deleteCase,
   bulkDeleteCases,
+  updateCase,
 } = useContext(
   CaseContext
 );
@@ -119,6 +120,68 @@ let duplicateCount = 0;
   duplicateCount++;
   return;
 }
+
+const normalizeStatus = (
+  status
+) => {
+  const value = status
+    ?.toString()
+    .trim()
+    .toUpperCase();
+
+  if (
+    value === "COMPLETE" ||
+    value === "COMPLETED"
+  ) {
+    return "Completed";
+  }
+
+  if (value === "PENDING") {
+    return "Pending";
+  }
+
+  if (value === "HOLD") {
+    return "Hold";
+  }
+
+  if (
+    value === "REJECTED"
+  ) {
+    return "Rejected";
+  }
+
+  return "Pending";
+};
+
+const verifierRate =
+  Number(
+    row["VERIFIER_RATE"] ||
+    row["VERIFIER RATE"] ||
+    row["Verifier Rate"]
+  ) || 0;
+
+  let excelDate = "";
+
+if (typeof row.DATE === "number") {
+
+  const jsDate = new Date(
+    (row.DATE - 25569) *
+      86400 *
+      1000
+  );
+
+  excelDate =
+    jsDate
+      .toLocaleDateString("en-GB")
+      .replaceAll("/", "-");
+
+} else {
+
+  excelDate =
+    row.DATE?.toString() || "";
+
+}
+
         const newCase = {
 
           companyId:
@@ -144,14 +207,17 @@ let duplicateCount = 0;
           contactNo:
             row["CONTACT NO."]?.toString() || "",
 
-          status:
-  row.STATUS
-    ?.toString()
-    .trim()
-    .toUpperCase() ===
-  "COMPLETED"
-    ? "Completed"
-    : "Pending",
+            date: excelDate,
+
+            visitType:
+  row["VISIT TYPE"] ||
+  "Fresh",
+
+
+status:
+  normalizeStatus(
+    row.STATUS
+  ),
 
           verifierName:
             row["FE NAME"] || "",
@@ -172,9 +238,7 @@ profit:
   (Number(
     row["COMPANY_RATE"]
   ) || 0) -
-  (Number(
-    row["VERIFIER_RATE"]
-  ) || 0),
+  verifierRate,
 
           state:
             row.STATE || "",
@@ -363,215 +427,209 @@ setSelectedCases([]);
           <table className="w-full">
 
             <thead className="bg-slate-900 text-white sticky top-0 z-10">
+  <tr>
+    <th className="p-4">
+      <input
+        type="checkbox"
+        checked={
+          filteredCases.length > 0 &&
+          selectedCases.length ===
+            filteredCases.length
+        }
+        onChange={(e) => {
+          if (e.target.checked) {
+            setSelectedCases(
+              filteredCases.map(
+                (item,index) => item._id
+              )
+            );
+          } else {
+            setSelectedCases([]);
+          }
+        }}
+      />
+    </th>
 
-              <tr>
-                <th className="p-4">
+    <th className="p-4 text-left">
+      S.No
+    </th>
 
-                  <input
-                    type="checkbox"
-                    checked={
-                      filteredCases.length > 0 &&
-                      selectedCases.length ===
-                      filteredCases.length
-                    }
-                    onChange={(e) => {
+    <th className="p-4 text-left">
+      Case ID
+    </th>
 
-                      if (e.target.checked) {
+    <th className="p-4 text-left">
+      Date
+    </th>
+    <th className="p-4 text-left">
+  Visit Type
+</th>
 
-                        setSelectedCases(
-                          filteredCases.map(
-                            (item) => item._id
-                          )
-                        );
+    <th className="p-4 text-left">
+      Applicant
+    </th>
 
-                      } else {
+    <th className="p-4 text-left">
+      Company
+    </th>
 
-                        setSelectedCases([]);
+    <th className="p-4 text-left">
+      Bank
+    </th>
 
-                      }
+    <th className="p-4 text-left">
+      Contact
+    </th>
 
-                    }}
-                  />
+    <th className="p-4 text-left">
+      Status
+    </th>
 
-                </th>
-                <th className="p-4 text-left">
-                  Case ID
-                </th>
+    <th className="p-4 text-left">
+      Company Rate
+    </th>
 
-                <th className="p-4 text-left">
-                  Applicant
-                </th>
-                <th className="p-4 text-left">
-                  Company
-                </th>
+    <th className="p-4 text-left">
+      Verifier Rate
+    </th>
 
-                <th className="p-4 text-left">
-                  Bank
-                </th>
+    <th className="p-4 text-left">
+      Profit
+    </th>
 
-                <th className="p-4 text-left">
-                  Contact
-                </th>
+    <th className="p-4 text-left">
+      Actions
+    </th>
+  </tr>
+</thead>
 
-                <th className="p-4 text-left">
-                  Status
-                </th>
+<tbody>
 
-                <th className="p-4 text-left">
-                  Company Rate
-                </th>
+{filteredCases.map(
+  (item, index) => (
+    <tr
+      key={item._id}
+      className="border-b"
+    >
 
-                <th className="p-4 text-left">
-                  Verifier Rate
-                </th>
-
-                <th className="p-4 text-left">
-                  Profit
-                </th>
-                <th className="p-4 text-left">
-                  Actions
-                </th>
-
-
-              </tr>
-
-            </thead>
-
-            <tbody>
-
-              {filteredCases.map(
-                (item) => (
-                  <tr
-                    key={item._id}
-                    className="border-b"
-                  >
-                    <td className="p-4">
-
-                      <input
-                        type="checkbox"
-                        checked={selectedCases.includes(
-                          item._id
-                        )}
-
-                        onChange={(e) => {
-
-                          if (e.target.checked) {
-
-                            setSelectedCases([
-                              ...selectedCases,
-                              item._id,
-                            ]);
-
-                          } else {
-
-                            setSelectedCases(
-                              selectedCases.filter(
-                                (id) =>
-                                  id !== item._id
-                              )
-                            );
-
-                          }
-
-                        }}
-                      />
-
-                    </td>
-
-                    <td className="p-4">
-                      {item.caseId}
-                    </td>
-
-                    <td className="p-4">
-                      {item.applicantName}
-                    </td>
-
-                    <td className="p-4">
-                      {item.companyName}
-                    </td>
-
-
-                    <td className="p-4">
-                      {item.bank}
-                    </td>
-
-                    <td className="p-4">
-                      {
-                        item.contactNo
-                      }
-                    </td>
-
-                    <td className="p-4">
-
-                      <span
-                        className={`px-3 py-1 rounded-full text-sm font-medium ${item.status === "Completed"
-                            ? "bg-green-100 text-green-700"
-                            : item.status === "Pending"
-                              ? "bg-orange-100 text-orange-700"
-                              : item.status === "Hold"
-                                ? "bg-yellow-100 text-yellow-700"
-                                : "bg-red-100 text-red-700"
-                          }`}
-                      >
-                        {item.status}
-                      </span>
-
-                    </td>
-
-                    <td className="p-4">
-                      ₹
-                      {
-                        item.companyRate
-                      }
-                    </td>
-
-                    <td className="p-4">
-                      ₹
-                      {
-                        item.verifierRate
-                      }
-                    </td>
-
-                    <td className="p-4 text-green-600 font-semibold">
-                      ₹
-                      {item.profit}
-                    </td>
-
-                    <td className="p-4">
-
-                      <div className="flex gap-2">
-
-                        <button
-                          onClick={() =>
-                            handleEdit(item)
-                          }
-                          className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg flex items-center gap-2"
-                        >
-                          <FaEdit />
-                          Edit
-                        </button>
-
-                        <button
-                          onClick={() =>
-                            handleDelete(item._id, item.caseId
-                            )
-                          }
-                          className="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg flex items-center gap-2"
-                        >
-                          <FaTrash />
-                          Delete
-                        </button>
-
-                      </div>
-
-                    </td>
-                  </tr>
+      <td className="p-4">
+        <input
+          type="checkbox"
+          checked={selectedCases.includes(
+            item._id
+          )}
+          onChange={(e) => {
+            if (e.target.checked) {
+              setSelectedCases([
+                ...selectedCases,
+                item._id,
+              ]);
+            } else {
+              setSelectedCases(
+                selectedCases.filter(
+                  (id) =>
+                    id !== item._id
                 )
-              )}
+              );
+            }
+          }}
+        />
+      </td>
 
-            </tbody>
+      <td className="p-4">
+        {index + 1}
+      </td>
 
-          </table>
+      <td className="p-4">
+        {item.caseId}
+      </td>
+
+      <td className="p-4">
+  {item.date || "-"}
+</td>
+
+<td className="p-4">
+  {item.visitType || "Fresh"}
+</td>
+
+<td className="p-4">
+  {item.applicantName}
+</td>
+
+<td className="p-4">
+  {item.companyName}
+</td>
+
+<td className="p-4">
+  {item.bank}
+</td>
+
+<td className="p-4">
+  {item.contactNo}
+</td>
+
+<td className="p-4">
+  <span
+    className={`px-3 py-1 rounded-full text-sm font-medium ${
+      item.status === "Completed"
+        ? "bg-green-100 text-green-700"
+        : "bg-orange-100 text-orange-700"
+    }`}
+  >
+    {item.status}
+  </span>
+</td>
+
+      <td className="p-4">
+        ₹{item.companyRate}
+      </td>
+
+      <td className="p-4">
+        ₹{item.verifierRate}
+      </td>
+
+      <td className="p-4">
+        ₹{item.profit}
+      </td>
+
+      <td className="p-4">
+
+  <div className="flex gap-2">
+
+    <button
+      onClick={() =>
+        handleEdit(item)
+      }
+      className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg flex items-center gap-2"
+    >
+      <FaEdit />
+      Edit
+    </button>
+
+    <button
+      onClick={() =>
+        handleDelete(
+          item._id,
+          item.caseId
+        )
+      }
+      className="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg flex items-center gap-2"
+    >
+      <FaTrash />
+      Delete
+    </button>
+
+  </div>
+
+</td>
+
+    </tr>
+  )
+)}
+
+</tbody>
+
+</table>
 
         </div>
 
