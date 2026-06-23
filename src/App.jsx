@@ -11,6 +11,7 @@ import Settings from "./pages/Settings";
 import Verifiers from "./pages/Verifiers";
 import Login from "./pages/Login";
 import VerifierDetails from "./pages/VerifierDetails";
+import DeletedCases from "./pages/DeletedCases";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -47,7 +48,14 @@ function App() {
             </ProtectedRoute>
           }
         />
-
+<Route
+  path="/deleted-cases"
+  element={
+    <ProtectedRoute>
+      <DeletedCases />
+    </ProtectedRoute>
+  }
+/>
         <Route
           path="/company/:id/add-case"
           element={

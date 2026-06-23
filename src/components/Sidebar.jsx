@@ -8,6 +8,7 @@ import {
   FaUserCheck,
 } from "react-icons/fa";
 import { FaUser } from "react-icons/fa";
+import { FaTrashRestore } from "react-icons/fa";
 
 import { NavLink, useNavigate } from "react-router-dom";
 import { useContext } from "react";
@@ -90,6 +91,14 @@ export default function Sidebar() {
               <FaFileExcel />
               Export Excel
             </NavLink>
+
+<NavLink
+  to="/deleted-cases"
+  className={menuClass}
+>
+  <FaTrashRestore />
+  Deleted Cases
+</NavLink>
 
             <NavLink
               to="/verifiers"

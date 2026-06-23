@@ -102,6 +102,8 @@ verifierRate: "",
       formData.verifierName,
     status:
   formData.status,
+  visitType:
+  formData.visitType,
   companyRate:
   Number(formData.companyRate),
 

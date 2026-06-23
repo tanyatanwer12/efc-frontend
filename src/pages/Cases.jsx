@@ -28,6 +28,9 @@ const [statusFilter, setStatusFilter] =
   const [selectedCases, setSelectedCases] =
     useState([]);
 
+    const [selectedMonth, setSelectedMonth] =
+  useState("");
+
   const [selectedCompany, setSelectedCompany] =
     useState("");
   const [search, setSearch] =
@@ -39,25 +42,32 @@ const [statusFilter, setStatusFilter] =
   const [selectedCase, setSelectedCase] =
     useState(null);
 
-  let filteredCases = cases.filter(
-  (item) =>
-    item.applicantName
-      ?.toLowerCase()
-      .includes(
-        search.toLowerCase()
-      ) ||
-    item.contactNo
-      ?.toString()
-      .includes(search)
-);
+    const uniqueMonths = [
+  ...new Set(
+    cases.map((item) => {
 
-if (statusFilter) {
-  filteredCases =
-    filteredCases.filter(
-      (item) =>
-        item.status === statusFilter
-    );
-}
+      if (!item.date)
+        return null;
+
+      const parts =
+        item.date.split("-");
+
+      const dateObj =
+        new Date(
+          `${parts[2]}-${parts[1]}-${parts[0]}`
+        );
+
+      return dateObj.toLocaleString(
+        "default",
+        {
+          month: "long",
+        }
+      );
+    })
+  ),
+].filter(Boolean);
+
+  let filteredCases = cases;
 
   const handleExcelUpload = (
     event
@@ -210,7 +220,9 @@ if (typeof row.DATE === "number") {
             date: excelDate,
 
             visitType:
+  row["VISIT_TYPE"] ||
   row["VISIT TYPE"] ||
+  row["Visit Type"] ||
   "Fresh",
 
 
@@ -409,6 +421,7 @@ setSelectedCases([]);
             </button>
 
           </div>
+<div className="flex gap-4 mt-4">
 
           <input
             type="text"
@@ -419,6 +432,31 @@ setSelectedCases([]);
             }
             className="w-full border p-3 rounded-lg"
           />
+
+          <select
+  value={selectedMonth}
+  onChange={(e) =>
+    setSelectedMonth(
+      e.target.value
+    )
+  }
+  className="border rounded-lg px-4 py-2 bg-white"
+>
+  <option value="">
+    All Months
+  </option>
+  {uniqueMonths.map(
+    (month) => (
+      <option
+        key={month}
+        value={month}
+      >
+        {month}
+      </option>
+    )
+  )}
+</select>
+</div>
 
         </div>
 
@@ -458,9 +496,9 @@ setSelectedCases([]);
       Case ID
     </th>
 
-    <th className="p-4 text-left">
-      Date
-    </th>
+    <th className="p-4 text-left whitespace-nowrap">
+  Date
+</th>
     <th className="p-4 text-left">
   Visit Type
 </th>
@@ -544,7 +582,7 @@ setSelectedCases([]);
         {item.caseId}
       </td>
 
-      <td className="p-4">
+      <td className="p-4 whitespace-nowrap w-[120px]">
   {item.date || "-"}
 </td>
 
