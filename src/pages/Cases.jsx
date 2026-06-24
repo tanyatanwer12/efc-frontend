@@ -19,6 +19,8 @@ export default function Cases() {
   CaseContext
 );
 
+  console.log("FIRST CASE:", cases[0]);
+
 const [statusFilter, setStatusFilter] =
   useState("");
 
@@ -210,6 +212,9 @@ if (typeof row.DATE === "number") {
 
           productType:
             row["LOAN APP TYPE"] || "",
+
+            resiOffice:
+  row.TYPE || "",
 
           address:
             row.ADDRESS || "",
@@ -460,13 +465,15 @@ setSelectedCases([]);
 
         </div>
 
-        <div className="bg-white rounded-xl shadow overflow-auto max-h-[650px]">
+        <div className="bg-white rounded-xl shadow overflow-x-auto overflow-y-auto max-h-[650px]">
 
-          <table className="w-full">
+          <table className="w-full text-sm">
 
             <thead className="bg-slate-900 text-white sticky top-0 z-10">
+
   <tr>
-    <th className="p-4">
+
+    <th className="px-2 py-2">
       <input
         type="checkbox"
         checked={
@@ -478,7 +485,7 @@ setSelectedCases([]);
           if (e.target.checked) {
             setSelectedCases(
               filteredCases.map(
-                (item,index) => item._id
+                (item) => item._id
               )
             );
           } else {
@@ -488,57 +495,60 @@ setSelectedCases([]);
       />
     </th>
 
-    <th className="p-4 text-left">
+    <th className="px-2 py-2 text-left whitespace-nowrap">
       S.No
     </th>
 
-    <th className="p-4 text-left">
-      Case ID
+    <th className="px-2 py-2 text-left whitespace-nowrap">
+      Date
     </th>
 
-    <th className="p-4 text-left whitespace-nowrap">
-  Date
-</th>
-    <th className="p-4 text-left">
-  Visit Type
-</th>
-
-    <th className="p-4 text-left">
+    <th className="px-2 py-2 text-left whitespace-nowrap">
       Applicant
     </th>
 
-    <th className="p-4 text-left">
-      Company
+    <th className="px-2 py-2 text-left whitespace-nowrap">
+      Resi/Off
     </th>
 
-    <th className="p-4 text-left">
-      Bank
+    <th className="px-2 py-2 text-left whitespace-nowrap">
+      Address
     </th>
 
-    <th className="p-4 text-left">
+    <th className="px-2 py-2 text-left whitespace-nowrap">
       Contact
     </th>
 
-    <th className="p-4 text-left">
+    <th className="px-2 py-2 text-left whitespace-nowrap">
+      State
+    </th>
+
+    <th className="px-2 py-2 text-left whitespace-nowrap">
+      FE Name
+    </th>
+
+    <th className="px-2 py-2 text-left whitespace-nowrap">
+      Comp. Rate
+    </th>
+
+    <th className="px-2 py-2 text-left whitespace-nowrap">
+      Ver. Rate
+    </th>
+
+    <th className="px-2 py-2 text-left whitespace-nowrap">
+      Case ID
+    </th>
+
+    <th className="px-2 py-2 text-left whitespace-nowrap">
       Status
     </th>
 
-    <th className="p-4 text-left">
-      Company Rate
-    </th>
-
-    <th className="p-4 text-left">
-      Verifier Rate
-    </th>
-
-    <th className="p-4 text-left">
-      Profit
-    </th>
-
-    <th className="p-4 text-left">
+    <th className="px-2 py-2 text-left whitespace-nowrap">
       Actions
     </th>
+
   </tr>
+
 </thead>
 
 <tbody>
@@ -550,7 +560,7 @@ setSelectedCases([]);
       className="border-b"
     >
 
-      <td className="p-4">
+      <td className="px-2 py-2">
         <input
           type="checkbox"
           checked={selectedCases.includes(
@@ -574,92 +584,98 @@ setSelectedCases([]);
         />
       </td>
 
-      <td className="p-4">
+      <td className="px-2 py-2">
         {index + 1}
       </td>
 
-      <td className="p-4">
-        {item.caseId}
+      <td className="px-2 py-2 whitespace-nowrap">
+        {item.date || "-"}
       </td>
 
-      <td className="p-4 whitespace-nowrap w-[120px]">
-  {item.date || "-"}
+      <td className="px-2 py-2">
+        {item.applicantName}
+      </td>
+
+      <td className="px-2 py-2">
+        {item.resiOffice || "-"}
+      </td>
+
+      <td
+  className="px-2 py-2 max-w-[180px] truncate"
+  title={item.address}
+>
+  {item.address}
 </td>
 
-<td className="p-4">
-  {item.visitType || "Fresh"}
-</td>
+      <td className="px-2 py-2">
+        {item.contactNo}
+      </td>
 
-<td className="p-4">
-  {item.applicantName}
-</td>
+      <td className="px-2 py-2">
+        {item.state}
+      </td>
 
-<td className="p-4">
-  {item.companyName}
-</td>
+      <td className="px-2 py-2">
+        {item.verifierName}
+      </td>
 
-<td className="p-4">
-  {item.bank}
-</td>
-
-<td className="p-4">
-  {item.contactNo}
-</td>
-
-<td className="p-4">
-  <span
-    className={`px-3 py-1 rounded-full text-sm font-medium ${
-      item.status === "Completed"
-        ? "bg-green-100 text-green-700"
-        : "bg-orange-100 text-orange-700"
-    }`}
-  >
-    {item.status}
-  </span>
-</td>
-
-      <td className="p-4">
+      <td className="px-2 py-2">
         ₹{item.companyRate}
       </td>
 
-      <td className="p-4">
+      <td className="px-2 py-2">
         ₹{item.verifierRate}
       </td>
 
-      <td className="p-4">
-        ₹{item.profit}
+      <td className="px-2 py-2 max-w-[180px] break-words">
+        {item.caseId}
       </td>
 
-      <td className="p-4">
+      <td className="px-2 py-2">
 
-  <div className="flex gap-2">
+        <span
+          className={`px-3 py-1 rounded-full text-sm font-medium ${
+            item.status ===
+            "Completed"
+              ? "bg-green-100 text-green-700"
+              : "bg-orange-100 text-orange-700"
+          }`}
+        >
+          {item.status}
+        </span>
 
-    <button
-      onClick={() =>
-        handleEdit(item)
-      }
-      className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg flex items-center gap-2"
-    >
-      <FaEdit />
-      Edit
-    </button>
+      </td>
 
-    <button
-      onClick={() =>
-        handleDelete(
-          item._id,
-          item.caseId
-        )
-      }
-      className="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg flex items-center gap-2"
-    >
-      <FaTrash />
-      Delete
-    </button>
+      <td className="px-2 py-2">
 
-  </div>
+        <div className="flex gap-2">
 
-</td>
+          <button
+            onClick={() =>
+              handleEdit(item)
+            }
+            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg flex items-center gap-2"
+          >
+            <FaEdit />
+            Edit
+          </button>
+
+          <button
+            onClick={() =>
+              handleDelete(
+                item._id,
+                item.caseId
+              )
+            }
+            className="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg flex items-center gap-2"
+          >
+            <FaTrash />
+            Delete
+          </button>
+
+        </div>
+
+      </td>
 
     </tr>
   )
