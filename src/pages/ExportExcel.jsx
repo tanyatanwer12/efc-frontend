@@ -16,6 +16,9 @@ export default function ExportExcel() {
 const { cases } =
   useContext(CaseContext);
 
+  const [paymentFilter, setPaymentFilter] =
+  useState("");
+
   const [verifier, setVerifier] =
     useState("");
 
@@ -56,6 +59,16 @@ const { cases } =
         item.companyId === company
     );
 }
+
+if (paymentFilter) {
+  filteredCases =
+    filteredCases.filter(
+      (item) =>
+        item.paymentStatus ===
+        paymentFilter
+    );
+}
+
 
 if (month) {
   filteredCases =
@@ -243,6 +256,8 @@ saveAs(fileData, fileName);
     </option>
   ))}
 </select>
+
+
 
             <select
               value={verifier}

@@ -26,7 +26,8 @@ const [statusFilter, setStatusFilter] =
 
   const { companies } =
     useContext(CompanyContext);
-
+const [paymentFilter, setPaymentFilter] =
+  useState("");
   const [selectedCases, setSelectedCases] =
     useState([]);
 
@@ -93,6 +94,11 @@ const [statusFilter, setStatusFilter] =
       item.status ===
         statusFilter;
 
+        const paymentMatch =
+  !paymentFilter ||
+  item.paymentStatus ===
+    paymentFilter;
+
     const companyMatch =
       !selectedCompany ||
       item.companyId ===
@@ -129,7 +135,8 @@ const [statusFilter, setStatusFilter] =
       searchMatch &&
       statusMatch &&
       companyMatch &&
-      monthMatch
+      monthMatch &&
+      paymentMatch
     );
   }
 );
@@ -492,6 +499,28 @@ const totalProfit =
     Rejected
   </option>
 </select>
+<select
+  value={paymentFilter}
+  onChange={(e) =>
+    setPaymentFilter(
+      e.target.value
+    )
+  }
+  className="border rounded-lg px-3 py-2"
+>
+  <option value="">
+    All Payments
+  </option>
+
+  <option value="Paid">
+    Paid
+  </option>
+
+  <option value="Unpaid">
+    Unpaid
+  </option>
+</select>
+
 
             <label className="bg-green-600 text-white px-5 py-3 rounded-lg cursor-pointer hover:bg-green-700">
 
