@@ -19,7 +19,7 @@ export default function Cases() {
   CaseContext
 );
 
-  console.log("FIRST CASE:", cases[0]);
+  
 
 const [statusFilter, setStatusFilter] =
   useState("");
@@ -194,6 +194,8 @@ if (typeof row.DATE === "number") {
 
 }
 
+
+
         const newCase = {
 
           companyId:
@@ -263,10 +265,7 @@ profit:
           createdAt:
             new Date(),
         };
-console.log(
-  "NEW CASE",
-  newCase
-);
+
         addCase(newCase);
 importedCount++;
       });
