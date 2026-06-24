@@ -95,39 +95,50 @@ if (filteredCases.length === 0) {
 }
 
     const exportData =
-      filteredCases.map((item) => ({
-        CaseID: item.caseId,
-        Applicant:
-          item.applicantName,
+  filteredCases.map(
+    (item, index) => ({
 
-CreatedDate:
-  new Date(
-    item.createdAt
-  ).toLocaleDateString(),
+      "S.No":
+        index + 1,
 
-        Bank: item.bank,
-        Contact:
-          item.contactNo,
-        Address:
-          item.address,
-        Pincode:
-          item.pincode,
-        Company:
-  companies.find(
-    (c) =>
-      c._id === item.companyId
-  )?.name || "",
-        Verifier:
-          item.verifierName,
-        Status:
-          item.status,
-        CompanyRate:
-          item.companyRate,
-        VerifierRate:
-          item.verifierRate,
-        Profit:
-          item.profit,
-      }));
+      Date:
+        item.date || "",
+
+      Applicant:
+        item.applicantName || "",
+
+      "Resi/Office":
+        item.resiOffice || "",
+
+      Address:
+        item.address || "",
+
+      Contact:
+        item.contactNo || "",
+
+      State:
+        item.state || "",
+
+      Pincode:
+        item.pincode || "",
+
+      "FE Name":
+        item.verifierName || "",
+
+      "Company Rate":
+        item.companyRate || 0,
+
+      "Verifier Rate":
+        item.verifierRate || 0,
+
+      "Case ID":
+        item.caseId || "",
+
+      Status:
+        item.status || "",
+
+    })
+  );
 
     const worksheet =
       XLSX.utils.json_to_sheet(

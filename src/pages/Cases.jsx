@@ -69,7 +69,70 @@ const [statusFilter, setStatusFilter] =
   ),
 ].filter(Boolean);
 
-  let filteredCases = cases;
+  let filteredCases = cases.filter(
+  (item) => {
+
+    const searchMatch =
+      !search ||
+      item.applicantName
+        ?.toLowerCase()
+        .includes(
+          search.toLowerCase()
+        ) ||
+      item.contactNo
+        ?.toString()
+        .includes(search) ||
+      item.caseId
+        ?.toLowerCase()
+        .includes(
+          search.toLowerCase()
+        );
+
+    const statusMatch =
+      !statusFilter ||
+      item.status ===
+        statusFilter;
+
+    const companyMatch =
+      !selectedCompany ||
+      item.companyId ===
+        selectedCompany;
+
+    let monthMatch = true;
+
+    if (
+      selectedMonth &&
+      item.date
+    ) {
+      const parts =
+        item.date.split("-");
+
+      const dateObj =
+        new Date(
+          `${parts[2]}-${parts[1]}-${parts[0]}`
+        );
+
+      const month =
+        dateObj.toLocaleString(
+          "default",
+          {
+            month: "long",
+          }
+        );
+
+      monthMatch =
+        month ===
+        selectedMonth;
+    }
+
+    return (
+      searchMatch &&
+      statusMatch &&
+      companyMatch &&
+      monthMatch
+    );
+  }
+);
 
   const handleExcelUpload = (
     event
@@ -253,6 +316,9 @@ verifierRate:
     row["Verifier Rate"]
   ) || 0,
 
+  pincode:
+  row.PINCODE?.toString() || "",
+
 profit:
   (Number(
     row["COMPANY_RATE"]
@@ -340,10 +406,33 @@ importedCount++;
   selectedCases
 );
 
-setSelectedCases([]);
-
     setSelectedCases([]);
   };
+
+const totalCompanyRate =
+  filteredCases.reduce(
+    (sum, item) =>
+      sum +
+      Number(
+        item.companyRate || 0
+      ),
+    0
+  );
+
+const totalVerifierRate =
+  filteredCases.reduce(
+    (sum, item) =>
+      sum +
+      Number(
+        item.verifierRate || 0
+      ),
+    0
+  );
+
+const totalProfit =
+  totalCompanyRate -
+  totalVerifierRate;
+
   return (
     <div className="flex">
       <Sidebar />
@@ -425,6 +514,58 @@ setSelectedCases([]);
             </button>
 
           </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+
+  <div className="bg-white p-5 rounded-xl shadow">
+
+    <h3 className="text-gray-500">
+      Total Cases
+    </h3>
+
+    <p className="text-3xl font-bold">
+      {filteredCases.length}
+    </p>
+
+  </div>
+
+  <div className="bg-white p-5 rounded-xl shadow">
+
+    <h3 className="text-gray-500">
+      Company Amount
+    </h3>
+
+    <p className="text-3xl font-bold text-blue-600">
+      ₹{totalCompanyRate}
+    </p>
+
+  </div>
+
+  <div className="bg-white p-5 rounded-xl shadow">
+
+    <h3 className="text-gray-500">
+      Verifier Amount
+    </h3>
+
+    <p className="text-3xl font-bold text-orange-600">
+      ₹{totalVerifierRate}
+    </p>
+
+  </div>
+
+  <div className="bg-white p-5 rounded-xl shadow">
+
+    <h3 className="text-gray-500">
+      Profit
+    </h3>
+
+    <p className="text-3xl font-bold text-green-600">
+      ₹{totalProfit}
+    </p>
+
+  </div>
+
+</div>
 <div className="flex gap-4 mt-4">
 
           <input
@@ -521,6 +662,9 @@ setSelectedCases([]);
     <th className="px-2 py-2 text-left whitespace-nowrap">
       State
     </th>
+    <th className="px-2 py-2 text-left whitespace-nowrap">
+  Pincode
+</th>
 
     <th className="px-2 py-2 text-left whitespace-nowrap">
       FE Name
@@ -615,6 +759,10 @@ setSelectedCases([]);
       </td>
 
       <td className="px-2 py-2">
+  {item.pincode || "-"}
+</td>
+
+      <td className="px-2 py-2">
         {item.verifierName}
       </td>
 
@@ -626,9 +774,12 @@ setSelectedCases([]);
         ₹{item.verifierRate}
       </td>
 
-      <td className="px-2 py-2 max-w-[180px] break-words">
-        {item.caseId}
-      </td>
+      <td
+  className="px-2 py-2 max-w-[120px] truncate"
+  title={item.caseId}
+>
+  {item.caseId}
+</td>
 
       <td className="px-2 py-2">
 
@@ -691,12 +842,12 @@ setSelectedCases([]);
       {showEditModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
 
-          <div className="bg-white p-8 rounded-xl w-[900px] max-h-[90vh] overflow-y-auto">
+          <div className="bg-white p-8 rounded-xl w-[1100px] max-h-[90vh] overflow-y-auto">
             <h2 className="text-2xl font-bold mb-6">
               Edit Case
             </h2>
 
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid md:grid-cols-3 gap-4">
 
               <div>
 
@@ -790,11 +941,14 @@ setSelectedCases([]);
 
               </div>
 
+
               <div>
 
                 <label className="block mb-1 font-medium">
                   Product Type
                 </label>
+
+                
 
                 <input
                   type="text"
@@ -815,26 +969,147 @@ setSelectedCases([]);
 
               <div>
 
-                <label className="block mb-1 font-medium">
-                  Pincode
-                </label>
+  <label className="block mb-1 font-medium">
+    Resi / Office
+  </label>
 
-                <input
-                  type="text"
-                  value={
-                    selectedCase?.pincode || ""
-                  }
-                  onChange={(e) =>
-                    setSelectedCase({
-                      ...selectedCase,
-                      pincode:
-                        e.target.value,
-                    })
-                  }
-                  className="w-full border p-3 rounded-lg"
-                />
+  <select
+    value={
+      selectedCase?.resiOffice || ""
+    }
+    onChange={(e) =>
+      setSelectedCase({
+        ...selectedCase,
+        resiOffice:
+          e.target.value,
+      })
+    }
+    className="w-full border p-3 rounded-lg"
+  >
+    <option value="RESI">
+      RESI
+    </option>
 
-              </div>
+    <option value="OFF">
+      OFF
+    </option>
+  </select>
+
+</div>
+
+
+              <div>
+
+  <label className="block mb-1 font-medium">
+    Pincode
+  </label>
+
+  <input
+    type="text"
+    value={selectedCase?.pincode || ""}
+    onChange={(e) =>
+      setSelectedCase({
+        ...selectedCase,
+        pincode: e.target.value,
+      })
+    }
+    className="w-full border p-3 rounded-lg"
+  />
+
+</div>
+
+<div>
+
+  <label className="block mb-1 font-medium">
+    State
+  </label>
+
+  <input
+    type="text"
+    value={selectedCase?.state || ""}
+    onChange={(e) =>
+      setSelectedCase({
+        ...selectedCase,
+        state: e.target.value,
+      })
+    }
+    className="w-full border p-3 rounded-lg"
+  />
+
+</div>
+
+<div>
+
+  <label className="block mb-1 font-medium">
+    Date
+  </label>
+
+  <input
+    type="text"
+    value={selectedCase?.date || ""}
+    onChange={(e) =>
+      setSelectedCase({
+        ...selectedCase,
+        date: e.target.value,
+      })
+    }
+    className="w-full border p-3 rounded-lg"
+  />
+
+</div>
+
+<div>
+
+  <label className="block mb-1 font-medium">
+    Visit Type
+  </label>
+
+  <select
+    value={selectedCase?.visitType || ""}
+    onChange={(e) =>
+      setSelectedCase({
+        ...selectedCase,
+        visitType: e.target.value,
+      })
+    }
+    className="w-full border p-3 rounded-lg"
+  >
+    <option value="Fresh">Fresh</option>
+<option value="REVISIT">Revisit</option>
+  </select>
+
+</div>
+
+<div>
+
+  <label className="block mb-1 font-medium">
+    Payment Status
+  </label>
+
+  <select
+    value={
+      selectedCase?.paymentStatus ||
+      "Unpaid"
+    }
+    onChange={(e) =>
+      setSelectedCase({
+        ...selectedCase,
+        paymentStatus:
+          e.target.value,
+      })
+    }
+    className="w-full border p-3 rounded-lg"
+  >
+    <option value="Paid">
+      Paid
+    </option>
+
+    <option value="Unpaid">
+      Unpaid
+    </option>
+  </select>
+
+</div>
 
               <div>
 
@@ -965,6 +1240,21 @@ setSelectedCases([]);
               </div>
 
             </div>
+
+            <div className="md:col-span-2">
+
+  <label className="block mb-1 font-medium">
+    Case ID
+  </label>
+
+  <input
+    type="text"
+    value={selectedCase?.caseId || ""}
+    readOnly
+    className="w-full border p-3 rounded-lg bg-gray-100"
+  />
+
+</div>
 
             <div className="flex justify-end gap-3 mt-6">
 
